@@ -11,25 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-
-const StyledTableCell = withStyles(theme => ({
-  head: {
-    backgroundColor: theme.palette.primary.dark,
-    color: theme.palette.common.white,
-  },
-  body: {
-    fontSize: 14,
-  },
-}))(TableCell);
-
-const StyledTableRow = withStyles(theme => ({
-  root: {
-    '&:nth-of-type(even)': {
-      backgroundColor: theme.palette.primary.light,
-    },
-  },
-}))(TableRow);
+import MaterialTable from 'material-table';
+import { createMuiTheme, makeStyles, MuiThemeProvider } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -43,7 +26,21 @@ const useStyles = makeStyles(theme => ({
       minWidth: 1200,
     },
   }));
-  
+
+const muiTableTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#3f51b5",
+      dark: "#1a237e",
+      light: "#7986cb",
+    },
+    secondary: {
+      main: "#009688",
+      dark: "#004d40",
+      light: "#4db6ac",
+    }
+  },
+});
 
 const GithubPullRequestView = ({reviews}) => {
   const classes = useStyles();
@@ -53,48 +50,76 @@ const GithubPullRequestView = ({reviews}) => {
     <Typography variant="body1" gutterBottom>
       Updated at {reviews.updated}
     </Typography>;
-  const pr_table = reviews == null ? null :
-    (<Table className={classes.table} size="small">
-      <TableHead>
-        <StyledTableRow>
-          <StyledTableCell align="center">Status</StyledTableCell>
-          <StyledTableCell align="center">Can merge</StyledTableCell>
-          <StyledTableCell align="center">Mergeable state</StyledTableCell>
-          <StyledTableCell align="center"># comments</StyledTableCell>
-          <StyledTableCell align="center">Age</StyledTableCell>
-          <StyledTableCell align="center">Link</StyledTableCell>
-          <StyledTableCell align="center">Name</StyledTableCell>
-          <StyledTableCell align="center">Created</StyledTableCell>
-        </StyledTableRow>
-      </TableHead>
-      <TableBody>
-        {reviews.review_details.map(row => (
-          <StyledTableRow key={row.id} >
-            <StyledTableCell component="th" scope="row">
-                {row.state}
-            </StyledTableCell>
-            <StyledTableCell align="center">
-              {row.mergeable ? <CheckCircleIcon color="inherit" /> : <AlertIcon color="error" />}
-            </StyledTableCell>
-            <StyledTableCell align="center">{row.mergeable_state}</StyledTableCell>
-            <StyledTableCell align="right">{row.comments}</StyledTableCell>
-            <StyledTableCell align="right">{row.age}</StyledTableCell>
-            <StyledTableCell align="left">
-              <Typography>
-                <Link href={row.url} color="inherit">{row.url}</Link>
-              </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="center">{row.created_by}</StyledTableCell>
-            <StyledTableCell align="center">{row.created_at}</StyledTableCell>
-          </StyledTableRow>
-        ))}
-      </TableBody>
-    </Table>);
+  const editable_table_header = [
+    { title: 'Mergeable', field: 'mergeable',
+      render: rowData => (
+        rowData.mergeable ? <CheckCircleIcon color="secondary" /> : <AlertIcon color="error" />
+      ),
+      cellStyle: {
+        textAlign: 'center',
+      },
+    },
+    { title: 'PR state', field: 'mergeable_state' },
+    { title: '# approvals', field: 'approvals',
+      cellStyle: {
+        textAlign: 'center',
+      },
+    },
+    { title: 'Age', field: 'age',
+      cellStyle: {
+        textAlign: 'right',
+      },
+    },
+    { title: 'Link', field: 'url', render: rowData => (
+        <Typography>
+          <Link href={rowData.url} color="inherit" target="_blank">{rowData.url}</Link>
+        </Typography>
+      )
+    },
+    { title: 'Name', field: 'created_by' },
+    { title: 'Created', field: 'created_at' },
+  ];
+  const editable_table = reviews == null ?
+  (
+    <MaterialTable
+      title="Med Admin Dev Review Dashboard"
+      isLoading
+    />
+  ) :
+  (
+    <MaterialTable
+      title="Med Admin Dev Review Dashboard"
+      columns={editable_table_header}
+      data={reviews.review_details}
+      options={{
+        pageSize: 10,
+        padding: 'dense',
+        headerStyle: {
+          textAlign: 'center',
+          paddingLeft: '1%',
+          paddingRight: '1%',
+          backgroundColor: '#3f51b5',
+          color: '#FFF'
+        },
+        rowStyle: {
+          backgroundColor: rowData => {
+            if(rowData.index % 2 === 0) {
+              return {backgroundColor: '#9fa8da'};
+            }
+            
+            return {backgroundColor: '#FFF'};
+          },
+        }
+      }}
+    />
+  );
   return (
     <Container maxWidth="lg">
       {status}
       <Paper className={classes.root}>
-        {pr_table}
+        <MuiThemeProvider theme={muiTableTheme}>
+          {editable_table}
+        </MuiThemeProvider>
       </Paper>
     </Container>
   );

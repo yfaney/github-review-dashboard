@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   }));
 
 const GithubPullRequestView = (props) => {
-  const { reviews, showHiddenReviews } = props;
+  const { reviews } = props;
 
   const classes = useStyles();
 
@@ -34,22 +34,8 @@ const GithubPullRequestView = (props) => {
       Updated at {reviews.updated}
     </Typography>;
 
-  let filtered_reviews;
-
-  if (reviews && reviews.review_details) {
-    if (showHiddenReviews) {
-      filtered_reviews = reviews;
-    } else {
-      filtered_reviews = JSON.parse(JSON.stringify(reviews)); // Deep copy of reviews object
-      filtered_reviews.review_details = filtered_reviews.review_details.filter((review_detail) => {
-        const hold_label = review_detail.labels.find(label => label === 'hold');
-        return hold_label !== 'hold';
-      });
-    }
-  }
-
   const pr_table = (
-    <PullRequestTableView reviews={ filtered_reviews } />
+    <PullRequestTableView reviews={ reviews } />
   );
 
   return (
@@ -68,6 +54,5 @@ const GithubPullRequestView = (props) => {
 
 GithubPullRequestView.propTypes = {
   reviews: PropTypes.object,
-  showHiddenReviews: PropTypes.bool,
 };
 export default GithubPullRequestView;

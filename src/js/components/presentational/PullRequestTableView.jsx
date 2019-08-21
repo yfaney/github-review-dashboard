@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import AlertIcon from '@material-ui/icons/NotInterested';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import WarningIcon from '@material-ui/icons/Warning';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
@@ -27,9 +28,17 @@ const PullRequestTableView = (props) => {
 
   const editable_table_header = [
     { title: 'OK to merge', field: 'mergeable',
-      render: rowData => (
-        rowData.mergeable ? <CheckCircleIcon color="secondary" /> : <AlertIcon color="error" />
-      ),
+      render: rowData => {
+        let icon;
+        if (rowData.mergeable_state === 'behind') {
+          icon = <WarningIcon color="disabled" />;
+        } else if (rowData.mergeable) {
+          icon = <CheckCircleIcon color="secondary" />;
+        } else {
+          icon = <AlertIcon color="error" />;
+        }
+        return icon;
+      },
       cellStyle: {
         textAlign: 'center',
       },

@@ -12,14 +12,14 @@ import PullRequestTableView from './PullRequestTableView.jsx';
 const useStyles = makeStyles(theme => ({
     root: {
       width: '100%',
-      minWidth: 1200,
+      minWidth: 1000,
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
       overflowX: 'auto',
     },
     table: {
       width: '100%',
-      minWidth: 1200,
+      minWidth: 1000,
     },
   }));
 

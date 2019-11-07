@@ -9,19 +9,19 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import PullRequestTableView from './PullRequestTableView.jsx';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-      width: '100%',
-      minWidth: 1000,
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-      overflowX: 'auto',
-    },
-    table: {
-      width: '100%',
-      minWidth: 1000,
-    },
-  }));
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    minWidth: 1000,
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    overflowX: 'auto',
+  },
+  table: {
+    width: '100%',
+    minWidth: 1000,
+  },
+}));
 
 const GithubPullRequestView = (props) => {
   const { reviews } = props;
